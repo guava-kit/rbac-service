@@ -1,0 +1,50 @@
+{
+  "root": true,
+  "overrides": [
+    {
+      "files": ["*.ts", "*.vue"],
+      "rules": {
+        "quotes": ["error", "single"],
+        "semi": ["error", "never"],
+        "linebreak-style": ["error", "unix"],
+        "max-len": ["error", { "code": 80 }]
+      }
+    },
+    {
+      "files": ["*.ts"],
+      "extends": ["plugin:@typescript-eslint/recommended"],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint"]
+    },
+    {
+      "files": ["*.vue"],
+      "extends": [
+        "plugin:vue/vue3-strongly-recommended",
+        "@vue/eslint-config-typescript"
+      ],
+      "rules": {
+        "vue/multi-word-component-names": 0,
+        "vue/max-attributes-per-line": [
+          "error",
+          {
+            "singleline": {
+              "max": 4
+            },
+            "multiline": {
+              "max": 4
+            }
+          }
+        ],
+        "vue/singleline-html-element-content-newline": 0,
+        "vue/component-name-in-template-casing": [
+          "error",
+          "kebab-case",
+          {
+            "globals": [],
+            "ignores": []
+          }
+        ]
+      }
+    }
+  ]
+}
