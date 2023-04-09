@@ -4,5 +4,6 @@ import App from './App.vue'
 import { router } from './router'
 import { pinia } from './store'
 import 'uno.css'
+import './styles.css'
 
 createApp(App).use(router).use(pinia).use(i18n).mount('#app')
