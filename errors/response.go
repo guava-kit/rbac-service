@@ -24,57 +24,62 @@ func SucceededWithData(c *fiber.Ctx, data any) error {
 }
 
 func BodyParserError(c *fiber.Ctx, message any) error {
-	return c.JSON(&JSONResponse{
+	return c.Status(fiber.StatusBadRequest).JSON(&JSONResponse{
 		Code:    ErrBodyParser.Code,
 		Message: message,
 	})
 }
 
 func QueryParserError(c *fiber.Ctx, message any) error {
-	return c.JSON(&JSONResponse{
+	return c.Status(fiber.StatusBadRequest).JSON(&JSONResponse{
 		Code:    ErrQueryParser.Code,
 		Message: message,
 	})
 }
 
 func ParameterError(c *fiber.Ctx, message any) error {
-	return c.JSON(&JSONResponse{
+	return c.Status(fiber.StatusBadRequest).JSON(&JSONResponse{
 		Code:    ErrParameter.Code,
 		Message: message,
 	})
 }
 
+func UnauthorizedError(c *fiber.Ctx, message ...any) error {
+	m := ErrUnauthorized.Message
+	if len(message) > 0 {
+		m = message[0]
+	}
+	return c.Status(fiber.StatusUnauthorized).JSON(&JSONResponse{
+		Code:    ErrUnauthorized.Code,
+		Message: m,
+	})
+}
+
+func ForbiddenError(c *fiber.Ctx, message ...any) error {
+	m := ErrForbidden.Message
+	if len(message) > 0 {
+		m = message[0]
+	}
+	return c.Status(fiber.StatusForbidden).JSON(&JSONResponse{
+		Code:    ErrForbidden.Code,
+		Message: m,
+	})
+}
+
 func DatabaseError(c *fiber.Ctx) error {
-	return c.JSON(&JSONResponse{
+	return c.Status(fiber.StatusInternalServerError).JSON(&JSONResponse{
 		Code:    ErrDatabase.Code,
 		Message: ErrDatabase.Message,
 	})
 }
 
-func SignupError(c *fiber.Ctx) error {
-	return c.JSON(&JSONResponse{
-		Code:    ErrSignin.Code,
-		Message: ErrSignin.Message,
-	})
-}
-
-func SigninError(c *fiber.Ctx) error {
-	return c.JSON(&JSONResponse{
-		Code:    ErrSignin.Code,
-		Message: ErrSignin.Message,
-	})
-}
-
-func UnauthorizedError(c *fiber.Ctx) error {
-	return c.JSON(&JSONResponse{
-		Code:    ErrUnauthorized.Code,
-		Message: ErrUnauthorized.Message,
-	})
-}
-
-func TokenExpiredError(c *fiber.Ctx) error {
-	return c.JSON(&JSONResponse{
-		Code:    ErrTokenExpired.Code,
-		Message: ErrTokenExpired.Message,
+func UnknownError(c *fiber.Ctx, message ...any) error {
+	m := ErrUnknown.Message
+	if len(message) > 0 {
+		m = message[0]
+	}
+	return c.Status(fiber.StatusInternalServerError).JSON(&JSONResponse{
+		Code:    ErrUnknown.Code,
+		Message: m,
 	})
 }

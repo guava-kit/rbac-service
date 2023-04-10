@@ -47,14 +47,14 @@ func (s *Service) CreateUser(c *fiber.Ctx) error {
 		return errors.DatabaseError(c)
 	}
 	if tenantExists == nil {
-		return errors.UnauthorizedError(c)
+		return errors.ParameterError(c, errors.Message("tenant_id", "租户不存在"))
 	}
 	userExists, err := s.Dao.GetUserByUsername(form.Username)
 	if err != nil {
 		return errors.DatabaseError(c)
 	}
 	if userExists != nil {
-		return errors.ParameterError(c, "用户名已存在")
+		return errors.ParameterError(c, errors.Message("username", "用户名已存在"))
 	}
 	user := &tables.User{Username: form.Username, Password: utils.GeneratePasswordHash(form.Password)}
 	user.Init()
@@ -82,21 +82,21 @@ func (s *Service) CreateUserRole(c *fiber.Ctx) error {
 		return errors.DatabaseError(c)
 	}
 	if userTenantEists == nil {
-		return errors.ParameterError(c, "用户不存在")
+		return errors.ParameterError(c, errors.Message("user_id", "用户不存在"))
 	}
 	roleExists, err := s.Dao.GetRoleById(form.RoleId, tenantId)
 	if err != nil {
 		return errors.DatabaseError(c)
 	}
 	if roleExists == nil {
-		return errors.ParameterError(c, "角色不存在")
+		return errors.ParameterError(c, errors.Message("role_id", "角色不存在"))
 	}
 	userRoleExists, err := s.Dao.GetUserRoleByUnique(form.UserId, form.RoleId, tenantId)
 	if err != nil {
 		return errors.DatabaseError(c)
 	}
 	if userRoleExists != nil {
-		return errors.ParameterError(c, "用户已有此角色")
+		return errors.ParameterError(c, errors.Message("role_id", "用户已有此角色"))
 	}
 	userRole := &tables.UserRole{UserId: form.UserId, RoleId: form.RoleId, TenantId: tenantId}
 	userRole.Init()
@@ -122,21 +122,21 @@ func (s *Service) CreateUserTenant(c *fiber.Ctx) error {
 		return errors.DatabaseError(c)
 	}
 	if tenantTreeExists == nil {
-		return errors.ParameterError(c, "租户不存在")
+		return errors.ParameterError(c, errors.Message("tenant_id", "租户不存在"))
 	}
 	userTenantEists, err := s.Dao.GetUserOnTenantTreeById(form.UserId, tenantId)
 	if err != nil {
 		return errors.DatabaseError(c)
 	}
 	if userTenantEists == nil {
-		return errors.ParameterError(c, "用户不存在")
+		return errors.ParameterError(c, errors.Message("user_id", "用户不存在"))
 	}
 	userTenantExists, err := s.Dao.GetUserTenantByUnique(form.UserId, form.TenantId)
 	if err != nil {
 		return errors.DatabaseError(c)
 	}
 	if userTenantExists != nil {
-		return errors.ParameterError(c, "租户已有此用户")
+		return errors.ParameterError(c, errors.Message("tenant_id", "租户已有此用户"))
 	}
 	userTenant := &tables.UserTenant{UserId: form.UserId, TenantId: form.TenantId}
 	userTenant.Init()
@@ -171,7 +171,7 @@ func (s *Service) UpdateUser(c *fiber.Ctx) error {
 			return errors.DatabaseError(c)
 		}
 		if userExists != nil {
-			return errors.ParameterError(c, "用户名已存在")
+			return errors.ParameterError(c, errors.Message("username", "用户名已存在"))
 		}
 		updateMap["username"] = username
 	}

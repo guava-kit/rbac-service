@@ -43,14 +43,14 @@ func (s *Service) CreatePermission(c *fiber.Ctx) error {
 		return errors.DatabaseError(c)
 	}
 	if permissionExists != nil {
-		return errors.ParameterError(c, "权限名称已存在")
+		return errors.ParameterError(c, errors.Message("name", "权限名称已存在"))
 	}
 	permissionExists, err = s.Dao.GetPermissionByCode(form.Code, tenantId)
 	if err != nil {
 		return errors.DatabaseError(c)
 	}
 	if permissionExists != nil {
-		return errors.ParameterError(c, "权限码已存在")
+		return errors.ParameterError(c, errors.Message("code", "权限码已存在"))
 	}
 	permission := &tables.Permission{Name: form.Name, Code: form.Code, Description: form.Description, TenantId: tenantId}
 	permission.Init()
@@ -84,7 +84,7 @@ func (s *Service) UpdatePermission(c *fiber.Ctx) error {
 			return errors.DatabaseError(c)
 		}
 		if permissionExists != nil {
-			return errors.ParameterError(c, "权限名称已存在")
+			return errors.ParameterError(c, errors.Message("name", "权限名称已存在"))
 		}
 		updateMap["name"] = name
 	}
@@ -94,7 +94,7 @@ func (s *Service) UpdatePermission(c *fiber.Ctx) error {
 			return errors.DatabaseError(c)
 		}
 		if permissionExists != nil {
-			return errors.ParameterError(c, "权限码已存在")
+			return errors.ParameterError(c, errors.Message("code", "权限码已存在"))
 		}
 		updateMap["code"] = code
 	}

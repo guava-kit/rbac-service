@@ -45,7 +45,7 @@ func (s *Service) CreateRole(c *fiber.Ctx) error {
 		return errors.DatabaseError(c)
 	}
 	if roleExists != nil {
-		return errors.ParameterError(c, "角色已存在")
+		return errors.ParameterError(c, errors.Message("name", "角色已存在"))
 	}
 	role := &tables.Role{Name: form.Name, TenantId: tenantId}
 	role.Init()
@@ -71,21 +71,21 @@ func (s *Service) CreateRolePermission(c *fiber.Ctx) error {
 		return errors.DatabaseError(c)
 	}
 	if roleExists == nil {
-		return errors.ParameterError(c, "角色不存在")
+		return errors.ParameterError(c, errors.Message("role_id", "角色不存在"))
 	}
 	permissionExists, err := s.Dao.GetPermissionOnTenantTreeById(form.PermissionId, tenantId)
 	if err != nil {
 		return errors.DatabaseError(c)
 	}
 	if permissionExists == nil {
-		return errors.ParameterError(c, "权限不存在")
+		return errors.ParameterError(c, errors.Message("permission_id", "权限不存在"))
 	}
 	rolePermissionExists, err := s.Dao.GetRolePermissionByUnique(form.RoleId, form.PermissionId, tenantId)
 	if err != nil {
 		return errors.DatabaseError(c)
 	}
 	if rolePermissionExists != nil {
-		return errors.ParameterError(c, "角色已有此权限")
+		return errors.ParameterError(c, errors.Message("permission_id", "角色已有此权限"))
 	}
 	rolePermission := &tables.RolePermission{RoleId: form.RoleId, PermissionId: form.PermissionId, TenantId: tenantId}
 	rolePermission.Init()
@@ -117,7 +117,7 @@ func (s *Service) UpdateRole(c *fiber.Ctx) error {
 			return errors.DatabaseError(c)
 		}
 		if roleExists != nil {
-			return errors.ParameterError(c, "角色已存在")
+			return errors.ParameterError(c, errors.Message("name", "角色名称已存在"))
 		}
 		updateMap["name"] = name
 	}

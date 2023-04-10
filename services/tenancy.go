@@ -42,14 +42,14 @@ func (s *Service) CreateTenant(c *fiber.Ctx) error {
 	if form.ParentId != nil {
 		tenantId, ok := c.UserContext().Value(ContextKey("tenantId")).(string)
 		if !ok {
-			return errors.UnauthorizedError(c)
+			return errors.ParameterError(c, "请求头需要携带tenant")
 		}
 		tenantTreeExists, err := s.Dao.GetTenantTree(tenantId, *form.ParentId)
 		if err != nil {
 			return errors.DatabaseError(c)
 		}
 		if tenantTreeExists == nil {
-			return errors.UnauthorizedError(c)
+			return errors.ParameterError(c, errors.Message("parent_id", "父级租户不存在"))
 		}
 	}
 	tenantExists, err := s.Dao.GetTenantByNameWithParent(form.Name, form.ParentId)
@@ -57,7 +57,7 @@ func (s *Service) CreateTenant(c *fiber.Ctx) error {
 		return errors.DatabaseError(c)
 	}
 	if tenantExists != nil {
-		return errors.ParameterError(c, "租户已存在")
+		return errors.ParameterError(c, errors.Message("name", "租户名称已存在"))
 	}
 	tenant := &tables.Tenant{Name: form.Name, ParentId: form.ParentId, Owner: user.Id}
 	tenant.Init()
@@ -76,7 +76,7 @@ func (s *Service) UpdateTenant(c *fiber.Ctx) error {
 		return errors.DatabaseError(c)
 	}
 	if originTenant == nil {
-		return errors.UnauthorizedError(c)
+		return errors.ParameterError(c, "租户不存在")
 	}
 	form := models.UpdateTenantForm{}
 	if err := c.BodyParser(&form); err != nil {
@@ -107,7 +107,7 @@ func (s *Service) CompareName(c *fiber.Ctx, form models.UpdateTenantForm, origin
 			return errors.DatabaseError(c)
 		}
 		if tenantExists != nil {
-			return errors.ParameterError(c, "租户已存在")
+			return errors.ParameterError(c, errors.Message("name", "租户名称已存在"))
 		}
 		updateMap["name"] = name
 	}
@@ -122,7 +122,7 @@ func (s *Service) CompareParentId(c *fiber.Ctx, form models.UpdateTenantForm, co
 				return errors.DatabaseError(c)
 			}
 			if tenantTreeExists == nil {
-				return errors.UnauthorizedError(c)
+				return errors.ParameterError(c, errors.Message("parent_id", "父级租户不存在"))
 			}
 		}
 		var tenantExists *tables.Tenant
@@ -145,7 +145,7 @@ func (s *Service) CompareParentId(c *fiber.Ctx, form models.UpdateTenantForm, co
 			return errors.DatabaseError(c)
 		}
 		if tenantExists != nil {
-			return errors.ParameterError(c, "租户已存在")
+			return errors.ParameterError(c, errors.Message("name", "租户名称已存在"))
 		}
 		updateMap["parent_id"] = parentId
 	}
